@@ -1,5 +1,5 @@
 # apriltag-pywrapper
-Pip installable python wrapping using the python wrapping provided by the original AprilTag library.
+Pip installable python wrapping using the python wrapping provided by the original [AprilTag library ](https://github.com/AprilRobotics/apriltag)(#f11c949).
 
 AprilTag 3
 ==========
@@ -129,4 +129,4 @@ If the border of your tag is not being detected as a quadrilateral, decrease qua
 If the border of the tag is detected then experiment with changing decode_sharpening.
 
 ## Pose Estimation.
-This wrapper does not contain ApirlTag's PoseEstimator. Pose estimation can be done using OpenCV via the PnP solver. The detector follows the ApirlTag convention of reporting 
+This wrapper does not contain ApirlTag's PoseEstimator. Pose estimation can be done using OpenCV via the PnP solver. The detector follows the ApirlTag convention of reporting corners in bottom-left, bottom-right, top-right, top-left order.
