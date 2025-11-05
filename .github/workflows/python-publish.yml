@@ -68,10 +68,9 @@ jobs:
           find dist -name "*.whl" -exec cp {} dist_flat/ \;
           ls -l dist_flat
                         
-      - name: Publish to TestPyPI via OIDC
+      - name: Publish to PyPI via OIDC
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          repository-url: https://test.pypi.org/legacy/
           packages-dir: dist_flat/
           
       # - name: Publish release distributions to PyPI
