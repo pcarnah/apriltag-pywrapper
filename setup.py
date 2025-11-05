@@ -1,15 +1,15 @@
 from skbuild import setup
 
 setup(
-    name="apriltag-wrapper",
+    name="apriltag-pywrapper",
     version="0.1.0",
     description="Lightweight pip-installable wrapper for AprilTag with full tag family support",
-    author="Your Name",
+    author="Patrick Carnahan",
     packages=["apriltag"],
     include_package_data=True,
     install_requires=["numpy"],
     python_requires=">=3.7",
-    url="https://github.com/yourusername/apriltag-wrapper",
+    url="https://github.com/pcarnah/apriltag-pywrapper",
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
