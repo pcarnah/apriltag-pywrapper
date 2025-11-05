@@ -162,9 +162,14 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
 # Python wrapper
 option(BUILD_PYTHON_WRAPPER "Builds Python wrapper" ON)
 
-find_package(Python3 QUIET COMPONENTS Development NumPy)
+if(SKBUILD)
+  set(Python_EXECUTABLE "${PYTHON_EXECUTABLE}")
+  set(Python_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
+  set(Python_LIBRARY "${PYTHON_LIBRARY}")
+endif()
+find_package(Python3 COMPONENTS Development.Module NumPy)
 
-if(BUILD_PYTHON_WRAPPER AND Python3_Development_FOUND AND Python3_NumPy_FOUND)
+if(BUILD_PYTHON_WRAPPER AND Python3_Development.Module_FOUND AND Python3_NumPy_FOUND)
 
     include(CMake/vtkEncodeString.cmake)
 
@@ -192,9 +197,20 @@ if(BUILD_PYTHON_WRAPPER AND Python3_Development_FOUND AND Python3_NumPy_FOUND)
     install(TARGETS ${apriltag_py_target} LIBRARY DESTINATION ${PY_DEST})
 elseif(BUILD_PYTHON_WRAPPER)
     message(WARNING
-        "Python bindings requested (BUILD_PYTHON_WRAPPER=ON) but Development and NumPy not found. "
-        "Python bindings will not be built. Set BUILD_PYTHON_WRAPPER=OFF to silent this warnings."
-     )
+    "Python bindings requested (BUILD_PYTHON_WRAPPER=ON) but Development and NumPy not found.\n"
+    "Python3_Development.Module_FOUND = ${Python3_Development.Module_FOUND}\n"
+    "Python3_NumPy_FOUND = ${Python3_NumPy_FOUND}\n"
+    "Python bindings will not be built. Set BUILD_PYTHON_WRAPPER=OFF to silence this warning."
+)
+    # Get all CMake variables
+get_cmake_property(_variableNames VARIABLES)
+
+# Loop over them and print any that start with Python3_Development
+foreach(_variableName ${_variableNames})
+    if(_variableName MATCHES "^Python3_Development")
+        message(STATUS "${_variableName} = ${${_variableName}}")
+    endif()
+endforeach()
 endif()
 
 # Examples

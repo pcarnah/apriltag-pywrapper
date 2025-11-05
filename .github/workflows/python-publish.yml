@@ -23,10 +23,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
-    env:
-      # Only needed for Linux; ignored on Windows/macOS
-      CIBW_BEFORE_BUILD: yum install -y python3-devel cmake ninja-build
-
     steps:
       - uses: actions/checkout@v4
 
@@ -45,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ runner.os }}
-          path: dist
+          path: dist/**/*.whl
 
   pypi-publish:
     runs-on: ubuntu-latest
@@ -58,19 +54,25 @@ jobs:
 
     # Dedicated environments with protections for publishing are strongly recommended.
     # For more information, see: https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#deployment-protection-rules
-    environment: testpypi
+    environment: pypi
 
     steps:
       - name: Download all wheel artifacts
         uses: actions/download-artifact@v4
         with:
           path: dist
-                  
-      - name: Publish to TestPyPI via OIDC
+
+      - name: Flatten wheels
+        run: |
+          mkdir -p dist_flat 
+          find dist -name "*.whl" -exec cp {} dist_flat/ \;
+          ls -l dist_flat
+                        
+      - name: Publish to PyPI via OIDC
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          repository-url: https://test.pypi.org/legacy/
-          packages-dir: dist/
+          packages-dir: dist_flat/
+          skip-existing: true
           
       # - name: Publish release distributions to PyPI
       #   uses: pypa/gh-action-pypi-publish@release/v1
