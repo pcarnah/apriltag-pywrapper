@@ -7,3 +7,10 @@ requires = [
     "numpy"
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.cibuildwheel]
+# Only build on CPython 3.8 and 3.9 for faster testing
+build = "cp38-* cp39-*"
+
+# Disable free-threading builds on all platforms
+skip = "cp3??t-*"
