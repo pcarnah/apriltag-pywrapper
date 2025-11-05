@@ -14,3 +14,6 @@ build = "cp38-* cp39-*"
 
 # Disable free-threading builds on all platforms
 skip = "cp3??t-*"
+
+[tool.cibuildwheel.linux]
+repair-wheel-command = "auditwheel repair --platform manylinux2014_x86_64 . -w {dest_dir} {wheel}"
