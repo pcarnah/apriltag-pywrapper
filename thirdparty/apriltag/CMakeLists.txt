@@ -167,7 +167,7 @@ if(SKBUILD)
   set(Python_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
   set(Python_LIBRARY "${PYTHON_LIBRARY}")
 endif()
-find_package(Python3 QUIET COMPONENTS Development.Module NumPy)
+find_package(Python3 COMPONENTS Development.Module NumPy)
 
 if(BUILD_PYTHON_WRAPPER AND Python3_Development_Module_FOUND AND Python3_NumPy_FOUND)
 
