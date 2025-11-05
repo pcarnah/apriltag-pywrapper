@@ -7,3 +7,9 @@ requires = [
     "numpy"
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.cibuildwheel.linux]
+before-build = """\
+    dnf install -y python3-devel\n\
+    pip install numpy scikit-build\n\
+"""
