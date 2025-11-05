@@ -61,6 +61,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: dist
+
+      - name: Flatten wheels
+        run: find dist -name "*.whl" -exec mv {} dist/ \;
                   
       - name: Publish to TestPyPI via OIDC
         uses: pypa/gh-action-pypi-publish@release/v1
