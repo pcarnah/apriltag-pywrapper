@@ -192,9 +192,11 @@ if(BUILD_PYTHON_WRAPPER AND Python3_Development_FOUND AND Python3_NumPy_FOUND)
     install(TARGETS ${apriltag_py_target} LIBRARY DESTINATION ${PY_DEST})
 elseif(BUILD_PYTHON_WRAPPER)
     message(WARNING
-        "Python bindings requested (BUILD_PYTHON_WRAPPER=ON) but Development and NumPy not found. "
-        "Python bindings will not be built. Set BUILD_PYTHON_WRAPPER=OFF to silent this warnings."
-     )
+    "Python bindings requested (BUILD_PYTHON_WRAPPER=ON) but Development and NumPy not found.\n"
+    "Python3_Development_FOUND = ${Python3_Development_FOUND}\n"
+    "Python3_NumPy_FOUND = ${Python3_NumPy_FOUND}\n"
+    "Python bindings will not be built. Set BUILD_PYTHON_WRAPPER=OFF to silence this warning."
+)
 endif()
 
 # Examples
