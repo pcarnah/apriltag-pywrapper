@@ -14,3 +14,7 @@ build = "cp38-* cp39-*"
 
 # Disable free-threading builds on all platforms
 skip = "cp3??t-*"
+
+# On an Linux Intel runner with qemu installed, build Intel and ARM wheels
+[tool.cibuildwheel.linux]
+archs = ["auto", "aarch64"]
