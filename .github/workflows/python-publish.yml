@@ -63,13 +63,16 @@ jobs:
           path: dist
 
       - name: Flatten wheels
-        run: find dist -name "*.whl" -exec mv {} dist/ \;
-                  
+        run: |
+          mkdir -p dist_flat 
+          find dist -name "*.whl" -exec cp {} dist_flat/ \;
+          ls -l dist_flat
+                        
       - name: Publish to TestPyPI via OIDC
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
-          packages-dir: dist/
+          packages-dir: dist_flat/
           
       # - name: Publish release distributions to PyPI
       #   uses: pypa/gh-action-pypi-publish@release/v1
