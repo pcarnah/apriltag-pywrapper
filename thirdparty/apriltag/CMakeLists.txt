@@ -162,7 +162,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
 # Python wrapper
 option(BUILD_PYTHON_WRAPPER "Builds Python wrapper" ON)
 
-find_package(Python3 QUIET COMPONENTS Development NumPy)
+find_package(Python3 QUIET COMPONENTS Development.Module NumPy)
 
 if(BUILD_PYTHON_WRAPPER AND Python3_Development_FOUND AND Python3_NumPy_FOUND)
 
