@@ -9,6 +9,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
+build = "cp38-* cp39-*"
 # Disable free-threading builds on all platforms
 skip = "cp3??t-*"
 
