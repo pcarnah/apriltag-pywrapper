@@ -23,6 +23,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
+    env:
+      # Only needed for Linux; ignored on Windows/macOS
+      CIBW_BEFORE_BUILD: yum install -y python3-devel cmake ninja-build
+
     steps:
       - uses: actions/checkout@v4
 
