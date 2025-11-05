@@ -164,7 +164,7 @@ option(BUILD_PYTHON_WRAPPER "Builds Python wrapper" ON)
 
 find_package(Python3 QUIET COMPONENTS Development.Module NumPy)
 
-if(BUILD_PYTHON_WRAPPER AND Python3_Development_FOUND AND Python3_NumPy_FOUND)
+if(BUILD_PYTHON_WRAPPER AND Python3_Development_Module_FOUND AND Python3_NumPy_FOUND)
 
     include(CMake/vtkEncodeString.cmake)
 
@@ -193,7 +193,7 @@ if(BUILD_PYTHON_WRAPPER AND Python3_Development_FOUND AND Python3_NumPy_FOUND)
 elseif(BUILD_PYTHON_WRAPPER)
     message(WARNING
     "Python bindings requested (BUILD_PYTHON_WRAPPER=ON) but Development and NumPy not found.\n"
-    "Python3_Development_FOUND = ${Python3_Development_FOUND}\n"
+    "Python3_Development_Module_FOUND = ${Python3_Development_Module_FOUND}\n"
     "Python3_NumPy_FOUND = ${Python3_NumPy_FOUND}\n"
     "Python bindings will not be built. Set BUILD_PYTHON_WRAPPER=OFF to silence this warning."
 )
