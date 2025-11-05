@@ -202,6 +202,15 @@ elseif(BUILD_PYTHON_WRAPPER)
     "Python3_NumPy_FOUND = ${Python3_NumPy_FOUND}\n"
     "Python bindings will not be built. Set BUILD_PYTHON_WRAPPER=OFF to silence this warning."
 )
+    # Get all CMake variables
+get_cmake_property(_variableNames VARIABLES)
+
+# Loop over them and print any that start with Python3_Development
+foreach(_variableName ${_variableNames})
+    if(_variableName MATCHES "^Python3_Development")
+        message(STATUS "${_variableName} = ${${_variableName}}")
+    endif()
+endforeach()
 endif()
 
 # Examples
