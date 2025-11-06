@@ -100,6 +100,7 @@ apriltag_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
     int         maxhamming      = 1;
     float       decimate        = 2.0;
     float       blur            = 0.0;
+	float		sharpen			= 0.25;
     bool        refine_edges    = true;
     bool        debug           = false;
     PyObject*   py_refine_edges = NULL;
@@ -110,6 +111,7 @@ apriltag_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
                         "maxhamming",
                         "decimate",
                         "blur",
+						"sharpen",
                         "refine_edges",
                         "debug",
                         NULL };
@@ -121,6 +123,7 @@ apriltag_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
                                      &maxhamming,
                                      &decimate,
                                      &blur,
+									 &sharpen,
                                      &py_refine_edges,
                                      &py_debug ))
     {
@@ -155,6 +158,7 @@ apriltag_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
     self->td->quad_sigma          = blur;
     self->td->nthreads            = Nthreads;
     self->td->refine_edges        = refine_edges;
+	self->td->decode_sharpening	  = sharpen;
     self->td->debug               = debug;
 
     switch(errno){
