@@ -2,6 +2,9 @@
 
 #include <stdbool.h>
 #include <Python.h>
+#ifndef Py_PYTHREAD_H
+#include <pythread.h>
+#endif
 #include <structmember.h>
 #include <numpy/arrayobject.h>
 #include <signal.h>
@@ -68,6 +71,7 @@ typedef struct {
 
     apriltag_family_t*   tf;
     apriltag_detector_t* td;
+    PyThread_type_lock   det_lock;
     void (*destroy_func)(apriltag_family_t *tf);
 } apriltag_py_t;
 
@@ -85,12 +89,17 @@ apriltag_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
     self->tf = NULL;
     self->td = NULL;
 
+    self->det_lock = PyThread_allocate_lock();
+    if (self->det_lock == NULL) {
+        PyErr_SetString(PyExc_RuntimeError, "Unable to allocate detection lock");
+        goto done;
+    }
+
     const char* family          = NULL;
     int         Nthreads        = 1;
     int         maxhamming      = 1;
     float       decimate        = 2.0;
     float       blur            = 0.0;
-	float		sharpen			= 0.25;
     bool        refine_edges    = true;
     bool        debug           = false;
     PyObject*   py_refine_edges = NULL;
@@ -101,19 +110,17 @@ apriltag_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
                         "maxhamming",
                         "decimate",
                         "blur",
-						"sharpen",
                         "refine_edges",
                         "debug",
                         NULL };
 
-    if(!PyArg_ParseTupleAndKeywords( args, kwargs, "s|iifffOO",
+    if(!PyArg_ParseTupleAndKeywords( args, kwargs, "s|iiffOO",
                                      keywords,
                                      &family,
                                      &Nthreads,
                                      &maxhamming,
                                      &decimate,
                                      &blur,
-									 &sharpen,
                                      &py_refine_edges,
                                      &py_debug ))
     {
@@ -148,7 +155,6 @@ apriltag_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
     self->td->quad_sigma          = blur;
     self->td->nthreads            = Nthreads;
     self->td->refine_edges        = refine_edges;
-	self->td->decode_sharpening	  = sharpen;
     self->td->debug               = debug;
 
     switch(errno){
@@ -177,6 +183,11 @@ apriltag_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
                 self->destroy_func(self->tf);
                 self->tf = NULL;
             }
+            if(self->det_lock != NULL)
+            {
+                PyThread_free_lock(self->det_lock);
+                self->det_lock = NULL;
+            }
             Py_DECREF(self);
         }
         return NULL;
@@ -198,6 +209,11 @@ static void apriltag_dealloc(apriltag_py_t* self)
     {
         self->destroy_func(self->tf);
         self->tf = NULL;
+    }
+    if(self->det_lock != NULL)
+    {
+        PyThread_free_lock(self->det_lock);
+        self->det_lock = NULL;
     }
 
     Py_TYPE(self)->tp_free((PyObject*)self);
@@ -247,10 +263,12 @@ static PyObject* apriltag_detect(apriltag_py_t* self,
                      .stride = strides[0],
                      .buf    = PyArray_DATA(image)};
 
-    zarray_t *detections;  // Declare detections variable outside of the GIL block
-    Py_BEGIN_ALLOW_THREADS  // Acquire the GIL before running detection
-        detections = apriltag_detector_detect(self->td, &im);
-    Py_END_ALLOW_THREADS  // Release the GIL after detection completes
+    zarray_t *detections = NULL;  // Declare detections variable outside the GIL macro block
+    Py_BEGIN_ALLOW_THREADS  // Release the GIL to allow other Python threads to run
+        PyThread_acquire_lock(self->det_lock, 1);  // Acquire the detection lock before running the detector (blocks until the lock is available)
+        detections = apriltag_detector_detect(self->td, &im);  // Run detection
+        PyThread_release_lock(self->det_lock);  // Release the detection lock
+    Py_END_ALLOW_THREADS  // Acquire the GIL after releasing the detection lock
 
     int N = zarray_size(detections);
 
